@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeCard · Página não encontrada</title>
+<script>
+/* Se o endereço contém /quiz ou /resultado, leva para a página certa mantendo as respostas. */
+(function () {
+  var s = location.pathname.split("/");
+  for (var i = s.length - 1; i >= 0; i--) {
+    var m = /^(quiz|resultado)(\.html?)?$/i.exec(s[i]);
+    if (m && !m[2]) { location.replace(s.slice(0, i).join("/") + "/" + m[1].toLowerCase() + ".html" + location.search); return; }
+  }
+})();
+</script>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #FFFFFF; color: #121214; font-family: Manrope, ui-sans-serif, system-ui, sans-serif; padding: 16px; box-sizing: border-box; }
+  main { max-width: 28rem; display: flex; flex-direction: column; gap: 14px; }
+  h1 { font-size: 1.8rem; line-height: 1.1; margin: 0; }
+  a { display: inline-flex; align-self: flex-start; padding: .8em 1.4em; border-radius: 999px; background: #FFBC00; color: #121214; font-weight: 800; text-decoration: none; }
+  a:focus-visible { outline: 3px solid #121214; outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Esta parada não existe.</h1>
+  <p>O endereço pode ter sido digitado errado. Volte ao início do quiz e descubra sua próxima parada.</p>
+  <a href="/" id="home">Ir para o quiz</a>
+</main>
+<script>
+/* GitHub Pages de projeto (usuario.github.io/repositorio/): o início fica na primeira pasta */
+if (/\.github\.io$/i.test(location.hostname)) {
+  var seg = location.pathname.split("/")[1];
+  if (seg) document.getElementById("home").href = "/" + seg + "/";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LeCard · Sua próxima parada</title>
+<meta name="description" content="Enquanto o ônibus não vem, descubra sua próxima parada. Ativação experimental da campanha LeCard no Ponto UFES, Goiabeiras, Vitória.">
+<meta name="theme-color" content="#FFBC00">
+<script>
+/* Rotas reconhecidas (com ou sem subpasta, com ou sem barra final):
+   /, /index.html, /quiz, /quiz/, /quiz.html, /quiz/index.html, /resultado, /resultado/, /resultado.html, /resultado/index.html.
+   Para forçar a base do site, defina data-base no <html>. */
+(function () {
+  var d = document.documentElement, b = d.getAttribute("data-base"), route = "inicio";
+  var s = location.pathname.replace(/\/+$/, "").split("/");
+  if (/^index(\.html?)?$/i.test(s[s.length - 1] || "")) s.pop();
+  var m = /^(quiz|resultado)(\.html?)?$/i.exec(s[s.length - 1] || "");
+  if (m) { route = m[1].toLowerCase(); s.pop(); }
+  else if (/\.html?$/i.test(s[s.length - 1] || "")) s.pop();
+  window.__ROUTE__ = route;
+  if (!b) b = s.join("/") + "/";
+  b = b.replace(/["<>]/g, "");
+  window.__SITE_BASE__ = b;
+  document.write('<base href="' + b + '">');
+  try { if (sessionStorage.getItem("lecard-smoke") === "1") { sessionStorage.removeItem("lecard-smoke"); d.className += " smoke-enter"; } } catch (e) {}
+})();
+</script>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Maven+Pro:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="quiz.css">
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
+<script src="smoke.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body class="is-loading">
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<div class="stage">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="LeCard — voltar à abertura do quiz" data-keep-mode><img src="logo.svg" alt="LeCard" width="140" height="54"></a>
+    <p class="stop-tag" aria-label="Você está no Ponto UFES, Goiabeiras, Vitória">
+      <span class="stop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 15V7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v8" stroke="#FFBC00" stroke-width="2"/><path d="M5 15h14v2.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 17.5V15Z" fill="#FFBC00"/><path d="M8 19v1.5M16 19v1.5M6 10h12" stroke="#FFBC00" stroke-width="2" stroke-linecap="round"/></svg></span>
+      Ponto UFES <span class="sep">·</span> Goiabeiras <span class="sep">·</span> Vitória
+    </p>
+    <p class="step-label" id="stepLabel" aria-live="polite"></p>
+  </header>
+
+  <div class="body">
+    <div class="card-panel" id="panel">
+      <div class="lecard-card">
+        <span class="card-glare" aria-hidden="true"></span>
+        <svg class="card-chip" viewBox="0 0 64 48" aria-hidden="true"><rect x="1" y="1" width="62" height="46" rx="9" fill="#F3CF63" stroke="#B88A00" stroke-width="2"/><path d="M1 16h18M1 32h18M45 16h18M45 32h18M19 1v46M45 1v46M19 24h26" stroke="#B88A00" stroke-width="2" fill="none"/></svg>
+        <svg class="card-nfc" viewBox="0 0 32 32" aria-hidden="true"><path d="M8 10a9 9 0 0 1 0 12M13 6.5a14 14 0 0 1 0 19M18 3a19 19 0 0 1 0 26" stroke="#121214" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>
+        <p class="card-caption" aria-hidden="true">Seu benefício,<br>suas escolhas.</p>
+        <canvas class="card-mist" id="cardMist" aria-hidden="true"></canvas>
+        <div class="genie-clip">
+          <div class="genie-rig"><div class="genie-hop">
+            <img class="genie" src="genio.webp" alt="Gênio da LeCard segurando um cartão LeCard" width="760" height="1883" decoding="async">
+            <span class="genie-shine" aria-hidden="true"></span>
+          </div></div>
+        </div>
+        <span class="spark s1" aria-hidden="true"></span><span class="spark s2" aria-hidden="true"></span><span class="spark s3" aria-hidden="true"></span><span class="spark s4" aria-hidden="true"></span><span class="spark s5" aria-hidden="true"></span>
+        <p class="bubble" id="bubble" aria-hidden="true"></p>
+      </div>
+    </div>
+
+    <main class="content" id="conteudo" tabindex="-1">
+      <div id="screen" class="screen">
+        <noscript><p class="noscript">Este quiz precisa de JavaScript ativado para funcionar.</p></noscript>
+      </div>
+    </main>
+  </div>
+
+  <footer class="foot">
+    <p class="signature"><b>LeCard</b> — Seu benefício, suas escolhas.</p>
+    <p class="foot-note">Ativação experimental · Concurso criativo Maely 2026. Sem cadastro: nenhuma informação pessoal é coletada.</p>
+  </footer>
+</div>
+
+<canvas id="smokeFx" aria-hidden="true"></canvas>
+<div class="idle" id="idle" hidden>
+  <div class="idle-box" role="alertdialog" aria-modal="true" aria-labelledby="idleTitle" aria-describedby="idleText">
+    <p class="idle-title" id="idleTitle">Ainda está por aqui?</p>
+    <p id="idleText">O quiz volta ao início em <strong id="idleCount">15</strong> segundos para a próxima pessoa.</p>
+    <button class="btn btn-primary" type="button" id="idleStay">Continuar meu quiz</button>
+  </div>
+</div>
+</body>
+</html>

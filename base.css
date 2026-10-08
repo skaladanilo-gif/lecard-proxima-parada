@@ -1,0 +1,120 @@
+/* LeCard · Sua próxima parada — base compartilhada
+   Layout: o "cartão" amarelo é a superfície-assinatura; o conteúdo vive em papel branco ao lado.
+   Elementos oficiais: logo, amarelo #FFBC00, grafite #333333, Maven Pro + Manrope, gênio.
+   Decisões propostas: letreiro escuro de ônibus no resultado, linha de parada como progresso. */
+
+
+:root {
+  /* cor — oficiais */
+  --sun: #FFBC00;          /* amarelo do logotipo */
+  --graphite: #333333;     /* cinza do logotipo */
+  --ink: #121214;          /* texto do site oficial */
+  --paper: #FFFFFF;
+  --cloud: #F3F4F7;        /* fundo neutro do site oficial */
+  --line: #E0E7F5;
+  /* cor — derivadas (proposta) */
+  --sun-deep: #E6A800;
+  --sun-soft: #FFF3CC;
+  --slate: #5E5E66;        /* texto secundário com contraste AA no branco */
+  --card-edge: rgba(18, 18, 20, .10);
+  --focus: #121214;
+  --ok: #1F6B45;
+  --warn-bg: #FFF6DB;
+
+  /* tipo */
+  --display: "Maven Pro", "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius-card: clamp(20px, 2.4vmin, 34px);
+  --radius-ui: 18px;
+  --pill: 999px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --shadow-lift: 0 1px 0 rgba(18,18,20,.04), 0 18px 40px -22px rgba(18,18,20,.35);
+
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; height: 100%; }
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; }
+[hidden] { display: none !important; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; letter-spacing: -0.015em; margin: 0; text-wrap: balance; color: var(--ink); }
+p { margin: 0; }
+a { color: inherit; }
+
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+[tabindex="-1"]:focus { outline: none; }
+
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 700; }
+.skip:focus { top: 12px; }
+
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Logo oficial: sempre sobre fundo claro para preservar o "Le" amarelo */
+.brand { display: inline-flex; align-items: center; line-height: 0; text-decoration: none; }
+.brand img { width: clamp(92px, 11vmin, 150px); height: auto; display: block; }
+
+/* Placa de ponto: identificação do local */
+.stop-tag {
+  display: inline-flex; align-items: center; gap: .6em;
+  font-family: var(--body); font-weight: 700; font-size: .82rem; letter-spacing: .02em;
+  color: var(--ink); background: var(--cloud); border-radius: var(--pill);
+  padding: .45em .95em .45em .5em; white-space: nowrap;
+}
+.stop-tag .stop-icon { width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--ink); display: grid; place-items: center; flex: none; }
+.stop-tag .stop-icon svg { width: 62%; height: 62%; }
+.stop-tag span.sep { color: var(--slate); font-weight: 500; }
+
+/* Botões */
+.btn {
+  -webkit-appearance: none; appearance: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: .6em;
+  min-height: 56px; padding: .85em 1.6em; border-radius: var(--pill);
+  font-family: var(--body); font-weight: 800; font-size: 1.05rem; letter-spacing: .005em;
+  text-decoration: none; text-align: center; line-height: 1.2;
+  transition: transform .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+.btn svg { width: 1.25em; height: 1.25em; flex: none; }
+.btn-primary { background: var(--sun); color: var(--ink); box-shadow: inset 0 -3px 0 rgba(18,18,20,.12); }
+.btn-primary:hover { background: #FFC827; }
+.btn-primary:active { transform: translateY(1px); background: var(--sun-deep); }
+.btn-dark { background: var(--ink); color: var(--paper); }
+.btn-dark:hover { background: #2a2a2e; }
+.btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+.btn-ghost:hover { background: var(--cloud); }
+.btn-quiet { background: transparent; color: var(--ink); min-height: 48px; padding: .6em .4em; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.btn-quiet:hover { text-decoration-color: var(--sun-deep); }
+
+/* Chip + aproximação, desenhados (motivo de cartão) */
+.chip { width: 100%; height: auto; display: block; }
+
+.signature { font-family: var(--display); font-weight: 700; color: var(--ink); }
+.signature b { font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}
+
+/* ---------- fumaça dourada (transição entre telas) ---------- */
+#smokeFx { position: fixed; inset: 0; z-index: 3000; pointer-events: none; display: none; }
+#smokeFx.is-active { display: block; }
+/* véu que segura a primeira pintura da página nova até a fumaça se dissipar */
+html.smoke-enter body::before,
+html.smoke-covered body::before {
+  content: ""; position: fixed; inset: 0; z-index: 2990; pointer-events: none;
+  background: linear-gradient(180deg, #FFD34F 0%, #FFBC00 55%, #F2A900 100%);
+}
+/* garantia: se o JavaScript falhar, o véu some sozinho */
+html.smoke-enter body::before { animation: veil-failsafe .5s ease 1.8s forwards; }
+@keyframes veil-failsafe { to { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { html.smoke-enter body::before { display: none; } }

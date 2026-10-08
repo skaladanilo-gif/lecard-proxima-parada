@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LeCard · Mapa da próxima parada</title>
+<meta name="description" content="Cafés, refeições, lanches e padarias reais a até 4 km do Ponto UFES, em Goiabeiras, Vitória. Aceitação do cartão LeCard a confirmar.">
+<meta name="theme-color" content="#FFBC00">
+<script>
+/* Base: funciona na raiz, numa subpasta (/mapa, /mapa/, /mapa/index.html) e em hospedagens que removem .html.
+   Para forçar uma base, defina data-base no <html>. */
+(function () {
+  var d = document.documentElement, b = d.getAttribute("data-base");
+  if (!b) {
+    var p = location.pathname;
+    if (/\/$/.test(p)) b = p;
+    else if (/\.html?$/i.test(p) || /\/index$/i.test(p)) b = p.replace(/[^\/]*$/, "");
+    else b = p.replace(/[^\/]*$/, "");
+  }
+  b = b.replace(/["<>]/g, "");
+  window.__SITE_BASE__ = b;
+  document.write('<base href="' + b + '">');
+  try { if (sessionStorage.getItem("lecard-smoke") === "1") { sessionStorage.removeItem("lecard-smoke"); d.className += " smoke-enter"; } } catch (e) {}
+})();
+</script>
+<link rel="preload" href="places.json" as="fetch" type="application/json" crossorigin>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Maven+Pro:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="map.css">
+<script src="mapa-config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="smoke.js" defer></script>
+<script src="map.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#lista">Pular para a lista de locais</a>
+<div class="app">
+  <header class="map-top">
+    <a class="brand" href="https://lecard.com.br/" target="_blank" rel="noopener" aria-label="LeCard — site oficial (abre em nova aba)"><img src="logo.svg" alt="LeCard" width="140" height="54"></a>
+    <div class="map-title">
+      <p class="kicker">Sua próxima parada</p>
+      <p class="stop-tag">
+        <span class="stop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 15V7a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v8" stroke="#FFBC00" stroke-width="2"/><path d="M5 15h14v2.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 17.5V15Z" fill="#FFBC00"/><path d="M8 19v1.5M16 19v1.5M6 10h12" stroke="#FFBC00" stroke-width="2" stroke-linecap="round"/></svg></span>
+        Ponto UFES <span class="sep">·</span> Goiabeiras <span class="sep">·</span> Vitória
+      </p>
+    </div>
+    <a class="btn btn-ghost btn-sm quiz-link" id="quizLink" href="#">Fazer o quiz</a>
+  </header>
+
+  <div class="layout">
+    <aside class="side" aria-label="Filtros e lista de locais">
+      <div class="side-head">
+        <h1 class="map-h1">Encontre sua próxima parada.</h1>
+
+        <div class="notice" role="note">
+          <span class="notice-mark" aria-hidden="true">!</span>
+          <p><strong>Locais reais. Aceitação a confirmar.</strong>
+          Este mapa ainda não está ligado à rede credenciada da LeCard. Antes de pagar, confirme no local ou nos <a href="https://lecard.com.br/usuarios" target="_blank" rel="noopener">canais oficiais da LeCard</a>.</p>
+        </div>
+
+        <div class="suggest" id="suggest" hidden></div>
+
+        <div class="filters" id="filters" role="group" aria-label="Filtrar por tipo de lugar"></div>
+
+        <div class="toggle-row">
+          <input type="checkbox" id="onlyConfirmed" class="switch">
+          <label for="onlyConfirmed">Somente aceitação confirmada</label>
+        </div>
+      </div>
+
+      <p class="status" id="status" role="status" aria-live="polite">Carregando locais…</p>
+      <ul class="list" id="lista" aria-label="Locais encontrados" tabindex="-1">
+        <li class="skeleton" aria-hidden="true"></li><li class="skeleton" aria-hidden="true"></li><li class="skeleton" aria-hidden="true"></li>
+      </ul>
+      <div class="empty" id="empty" hidden></div>
+      <section class="detail" id="detail" hidden aria-labelledby="detailName" tabindex="-1"></section>
+
+      <details class="about">
+        <summary>Sobre os dados deste mapa</summary>
+        <div class="about-body" id="about">
+          <p>Locais, coordenadas, endereços e horários vêm do <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>, mantido por colaboradores. Cada local foi conferido na fonte em 08/10/2026. É uma seleção demonstrativa, não uma lista completa do entorno.</p>
+          <p>A distância é medida em linha reta a partir do <a href="https://www.openstreetmap.org/node/294045123" target="_blank" rel="noopener">Ponto UFES (Av. Fernando Ferrari)</a>. O caminho a pé ou de ônibus costuma ser maior.</p>
+          <p>Nenhum local está marcado como credenciado. Quando a LeCard fornecer a rede oficial, o mapa passa a mostrar a aceitação por estabelecimento e por tipo de benefício. Refeição (refeições prontas em restaurantes, lanchonetes e padarias) e Alimentação (compras de alimentos em supermercados, mercearias e açougues) são benefícios diferentes.</p>
+          <p>Dados © colaboradores do OpenStreetMap, licença <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">ODbL</a>.</p>
+        </div>
+      </details>
+    </aside>
+
+    <section class="map-wrap" aria-label="Mapa dos locais">
+      <div id="map" class="map"></div>
+      <div class="map-tools">
+        <button type="button" class="btn btn-map" id="fitRadius">Ver todo o raio de 4 km</button>
+        <button type="button" class="btn btn-map" id="centerStop">Centralizar no ponto</button>
+      </div>
+      <p class="map-legend"><span class="legend-ring" aria-hidden="true"></span>Raio de 4 km em linha reta a partir do ponto</p>
+      <p class="map-alert" id="mapAlert" hidden></p>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <p class="signature"><b>LeCard</b> — Seu benefício, suas escolhas.</p>
+    <p class="foot-note">Ativação experimental · Concurso criativo Maely 2026. Sem cadastro e sem coleta de dados pessoais.</p>
+  </footer>
+</div>
+
+<canvas id="smokeFx" aria-hidden="true"></canvas>
+<div class="idle" id="idle" hidden>
+  <div class="idle-box" role="alertdialog" aria-modal="true" aria-labelledby="idleTitle">
+    <p class="idle-title" id="idleTitle">Ainda está por aqui?</p>
+    <p>Voltando ao quiz em <strong id="idleCount">15</strong> segundos para a próxima pessoa.</p>
+    <button class="btn btn-primary" type="button" id="idleStay">Continuar no mapa</button>
+  </div>
+</div>
+</body>
+</html>
