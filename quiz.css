@@ -356,7 +356,9 @@ html { font-size: 16px; }
 
 /* ---------- celular e telas estreitas ---------- */
 @media (max-width: 899px) {
-  .view-pergunta .card-panel, .view-resultado .card-panel { display: none; }
+  /* celular e telas verticais estreitas: o gênio aparece em todas as telas, num cartão menor */
+  .view-pergunta .card-panel, .view-resultado .card-panel { width: min(54vw, 260px); }
+  .view-pergunta .card-caption, .view-resultado .card-caption { display: none; } /* cartão pequeno: só chip e gênio */
   .result-actions { order: -1; }
   .result-actions .btn-primary { flex: 1 1 100%; }
   .result-actions .btn-ghost { flex: 1 1 auto; }
