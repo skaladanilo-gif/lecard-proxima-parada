@@ -82,6 +82,7 @@ html { font-size: 16px; }
   position: absolute; right: 1%; bottom: -78%; height: 162.5%; aspect-ratio: 760 / 1883;
   transform-origin: 50% 72%;
 }
+.genie-rig.is-wide { height: 140%; bottom: -64%; right: -4%; } /* poses mais largas (braços abertos, prato): menores para não cobrir o chip */
 .genie-hop { position: absolute; inset: 0; transform-origin: 50% 80%; }
 .genie { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: drop-shadow(0 14px 22px rgba(18, 18, 20, .28)); }
 .genie-shine {
@@ -383,7 +384,8 @@ html { font-size: 16px; }
   html { font-size: clamp(18px, 1.75vmin + 6px, 34px); }
   .body { justify-content: flex-start; gap: 5vmin; }
   .card-panel { width: min(100%, 74vmin); }
-  .view-pergunta .card-panel, .view-resultado .card-panel { width: min(100%, 52vmin); }
+  .view-pergunta .card-panel { width: min(100%, 70vmin); } /* menos texto → gênio maior */
+  .view-resultado .card-panel { width: min(100%, 56vmin); }
   .screen { max-width: none; }
   .lead, .q-intro, .result-lead { max-width: 44ch; }
   .qr { width: 30vmin; }

@@ -40,33 +40,50 @@
   /* ---------- conteúdo ---------- */
   var QUESTIONS = [
     { key: "humor", stop: "Sentimento", title: "Como você está se sentindo hoje?",
-      intro: "Não tem resposta certa. Escolha a que mais combina com você agora.",
-      genie: "Oi! Antes de sugerir qualquer coisa, quero te conhecer.",
+      genie: "",
       short: { cansado: "Cansado", disposto: "Disposto", fome: "Com fome" },
       choices: [
-        ["cansado", "Estou cansado", "Meu dia está pedindo um respiro."],
-        ["disposto", "Estou disposto", "Tenho energia para aproveitar o dia."],
-        ["fome", "Estou com fome", "Uma boa comida cairia bem agora."]
+        ["cansado", "Estou cansado", ""],
+        ["disposto", "Estou disposto", ""],
+        ["fome", "Estou com fome", ""]
       ] },
     { key: "momento", stop: "Ritmo", title: "O que seu dia está pedindo?",
-      intro: "Cada dia tem um ritmo. Qual é o seu agora?",
-      genie: "Anotado. Agora me conta do seu ritmo.",
+      genie: "",
       short: { pausa: "Pausa", pratico: "Prático", novo: "Novidade" },
       choices: [
-        ["pausa", "Uma pausa para mim", "Sentar, respirar e aproveitar sem pressa."],
-        ["pratico", "Algo prático", "Uma parada rápida para seguir meu caminho."],
-        ["novo", "Sair do automático", "Conhecer um lugar e mudar um pouco a rotina."]
+        ["pausa", "Uma pausa para mim", ""],
+        ["pratico", "Algo prático", ""],
+        ["novo", "Sair do automático", ""]
       ] },
     { key: "desejo", stop: "Desejo", title: "O que faria esse momento melhor?",
-      intro: "Última pergunta. Depois disso, a escolha é toda sua.",
-      genie: "Última pergunta. Depois, quem decide é você.",
+      genie: "",
       short: { cafe: "Café", restaurante: "Refeição", lanche: "Lanche" },
       choices: [
-        ["cafe", "Um café com algo gostoso.", "Uma bebida quente e um acompanhamento."],
-        ["restaurante", "Uma boa refeição.", "Um prato para comer com calma ou no caminho."],
-        ["lanche", "Um lanche.", "Algo para matar a fome e seguir o dia."]
+        ["cafe", "Um café com algo gostoso", ""],
+        ["restaurante", "Uma boa refeição", ""],
+        ["lanche", "Um lanche", ""]
       ] }
   ];
+
+  /* gênio: uma pose por tela (abertura, cada pergunta e cada resultado) */
+  var GENIE = {
+    inicio: { src: "genio.webp", w: 760, h: 1883, alt: "Gênio da LeCard segurando um cartão LeCard" },
+    1: { src: "genio-oferece.webp", w: 658, h: 1700, alt: "Gênio da LeCard com a mão no peito, oferecendo ajuda" },
+    2: { src: "genio-pensa.webp", w: 624, h: 1700, alt: "Gênio da LeCard pensativo, com a mão no queixo" },
+    3: { src: "genio-abraco.webp", w: 1047, h: 1700, alt: "Gênio da LeCard de braços abertos", wide: true },
+    cafe: { src: "genio-cafe.webp", w: 677, h: 1700, alt: "Gênio da LeCard segurando uma xícara de café" },
+    restaurante: { src: "genio-prato.webp", w: 819, h: 1700, alt: "Gênio da LeCard oferecendo um prato feito", wide: true },
+    lanche: { src: "genio-lanche.webp", w: 803, h: 1700, alt: "Gênio da LeCard oferecendo um sanduíche", wide: true }
+  };
+  function setGenie(key) {
+    var g = GENIE[key] || GENIE.inicio;
+    var img = document.querySelector(".genie"), rig = document.querySelector(".genie-rig"), shine = document.querySelector(".genie-shine");
+    if (!img || !rig) return;
+    img.src = g.src; img.width = g.w; img.height = g.h; img.alt = g.alt;
+    rig.style.aspectRatio = g.w + " / " + g.h;
+    rig.classList.toggle("is-wide", !!g.wide);
+    if (shine) { shine.style.webkitMaskImage = shine.style.maskImage = 'url("' + g.src + '")'; }
+  }
 
   var PLACE = {
     cafe: { article: "uma cafeteria", sign: "Cafeteria", mapLabel: "cafés" },
@@ -164,14 +181,13 @@
 
   function renderStart() {
     setChrome("inicio", "", "");
+    setGenie("inicio");
     document.title = "LeCard · Sua próxima parada";
     screen.innerHTML =
-      '<p class="eyebrow">Seu momento, suas escolhas</p>' +
       '<h1 class="headline">' + words("Enquanto o ônibus não vem, descubra sua próxima parada.").replace(/ (<span class="w"[^>]*>parada\.<\/span>)$/, "&nbsp;$1") + "</h1>" +
-      '<p class="lead">Conte como você está se sentindo e descubra uma sugestão para sua próxima parada.</p>' +
       '<div class="start-actions">' +
         '<a class="btn btn-primary btn-xl btn-magic" href="' + link("quiz.html", { etapa: "1", humor: "", momento: "", desejo: "" }) + '"><span>Clique para iniciar o quiz</span>' + icon("arrowR") + "</a>" +
-        '<p class="start-meta"><span>3 perguntas</span><span>menos de 1 minuto</span><span>sem cadastro</span></p>' +
+        '<p class="start-meta"><span>3 perguntas</span><span>sem cadastro</span></p>' +
       "</div>";
   }
 
@@ -203,25 +219,25 @@
   function renderQuestion(stage) {
     var q = QUESTIONS[stage - 1];
     var current = answer(q.key);
-    setChrome("pergunta", "Pergunta " + stage + " de 3", q.genie);
+    setChrome("pergunta", "Pergunta " + stage + " de 3", "");
+    setGenie(stage);
     document.title = "Pergunta " + stage + " de 3 · LeCard";
     var back = stage === 1 ? startLink() : link("quiz.html", { etapa: String(stage - 1) });
     screen.innerHTML =
       routeLine(stage - 1, "Pergunta " + stage + " de 3") +
       '<h1 class="q-title" id="qTitle">' + words(q.title) + "</h1>" +
-      '<p class="q-intro">' + q.intro + "</p>" +
       '<div class="choices" role="group" aria-labelledby="qTitle">' +
       q.choices.map(function (c, i) {
         var sel = current === c[0];
         return '<button type="button" class="choice' + (sel ? " is-selected" : "") + '" style="--k:' + i + '" data-value="' + c[0] + '" aria-pressed="' + sel + '">' +
           '<span class="choice-ico">' + icon(c[0]) + "</span>" +
-          '<span class="choice-text"><strong>' + c[1] + "</strong><small>" + c[2] + "</small></span>" +
+          '<span class="choice-text"><strong>' + c[1] + "</strong></span>" +
           '<span class="choice-key" aria-hidden="true">' + (sel ? icon("check") : i + 1) + "</span>" +
           "</button>";
       }).join("") +
       "</div>" +
       '<nav class="q-nav" aria-label="Navegação do quiz">' +
-        '<a class="btn btn-quiet" href="' + back + '">' + icon("arrowL") + (stage === 1 ? "Voltar à abertura" : "Voltar à pergunta anterior") + "</a>" +
+        '<a class="btn btn-quiet" href="' + back + '" aria-label="' + (stage === 1 ? "Voltar à abertura" : "Voltar à pergunta anterior") + '">' + icon("arrowL") + "Voltar</a>" +
         (stage > 1 ? '<a class="btn btn-quiet" href="' + startLink() + '">' + icon("restart") + "Recomeçar</a>" : "") +
       "</nav>";
 
@@ -273,12 +289,12 @@
 
   function renderResultMissing() {
     var m = firstMissing();
-    setChrome("pergunta", "Quase lá", "Faltou só uma resposta para eu sugerir sua parada.");
+    setChrome("pergunta", "Quase lá", "");
+    setGenie(m);
     document.title = "Falta uma resposta · LeCard";
     screen.innerHTML =
       routeLine(m - 1, "Falta a pergunta " + m) +
-      '<h1 class="q-title">Falta uma resposta para chegar à sua parada.</h1>' +
-      '<p class="q-intro">Este link não trouxe todas as respostas. Continue de onde parou: são só alguns toques.</p>' +
+      '<h1 class="q-title">Falta uma resposta.</h1>' +
       '<div class="start-actions"><a class="btn btn-primary btn-xl" href="' + link("quiz.html", { etapa: String(m) }) + '">Responder a pergunta ' + m + icon("arrowR") + "</a>" +
       '<a class="btn btn-quiet" href="' + startLink() + '">' + icon("restart") + "Começar de novo</a></div>";
   }
@@ -289,7 +305,8 @@
     var place = PLACE[desejo];
     var qrUrl = mapUrl(desejo, humor, momento, false);
     var openUrl = mapUrl(desejo, humor, momento, totem);
-    setChrome("resultado", "Sua próxima parada", "Tenho uma sugestão. A escolha final é sua.");
+    setChrome("resultado", "Sua próxima parada", "");
+    setGenie(desejo);
     document.title = "Sua próxima parada: " + place.article + " · LeCard";
 
     screen.innerHTML =
@@ -298,7 +315,6 @@
         '<span class="sign-label" aria-hidden="true">Sua próxima parada:</span>' +
         '<span class="sign-dest" id="signDest" aria-hidden="true">' + place.article + ".</span>" +
       "</h1>" +
-      '<p class="lead result-lead">' + MOOD[humor] + " " + RHYTHM[momento][desejo] + "</p>" +
       '<p class="tagline">O gênio sugere. Você escolhe.</p>' +
       '<div class="result-grid">' +
         '<section class="takeaway" aria-labelledby="takeTitle">' +
@@ -306,17 +322,16 @@
           '<div class="qr" id="qr" role="img" aria-label="QR code que abre o mapa de ' + place.mapLabel + ' perto do Ponto UFES"><span class="qr-scan" aria-hidden="true"></span></div>' +
           '<div class="takeaway-text">' +
             '<h2 id="takeTitle">Leve sua escolha com você.</h2>' +
-            "<p>Aponte a câmera do celular para abrir o mapa com " + place.mapLabel + " a até 4 km deste ponto, em linha reta.</p>" +
-            (qrUrl ? '<p class="qr-host">' + new URL(qrUrl).host + "</p>" : "") +
+            "<p>Aponte a câmera e abra o mapa.</p>" +
           "</div>" +
         "</section>" +
         '<div class="result-actions">' +
           (openUrl ? '<a class="btn btn-primary btn-xl" href="' + openUrl + '">' + icon("map") + "Abrir meu mapa</a>" : "") +
           '<a class="btn btn-ghost" href="' + startLink() + '">' + icon("restart") + "Começar de novo</a>" +
-          '<a class="btn btn-quiet" href="' + link("quiz.html", { etapa: "3" }) + '">' + icon("arrowL") + "Voltar à pergunta anterior</a>" +
+          '<a class="btn btn-quiet" href="' + link("quiz.html", { etapa: "3" }) + '" aria-label="Voltar à pergunta anterior">' + icon("arrowL") + "Voltar</a>" +
         "</div>" +
       "</div>" +
-      '<p class="fine">Os locais do mapa são reais. A aceitação do cartão LeCard em cada um ainda será confirmada com a rede oficial da marca.</p>';
+      '<p class="fine">Locais reais. Aceitação a confirmar.</p>';
 
     drawQR(qrUrl);
   }
